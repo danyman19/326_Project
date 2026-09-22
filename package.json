@@ -1,0 +1,24 @@
+{
+  "name": "326_project",
+  "version": "1.0.0",
+  "description": "Final project for CS326",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danyman19/326_Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/danyman19/326_Project/issues"
+  },
+  "homepage": "https://github.com/danyman19/326_Project#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
