@@ -1,1 +1,1 @@
-Didn’t use any AI for this sprint 
+No AI for both sprint 0 and 1
