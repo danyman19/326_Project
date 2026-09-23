@@ -2,8 +2,41 @@ Akhila Garre - garreakhila
 Daniel Qi - danyman19
 Mai Le - mainle-git
 
-Working agreement: 
+Working agreement:
+
 - Since there are only two of us in the group, "done" for a PR means both of us have reviewed it and approve
 - Communication: We have exchanged numbers, so we will communicate through iMessage
-- Disagreements: We will make sure to work through any disagreements professionally and stay open-minded through our conversations and will communicate our thoughts 
+- Disagreements: We will make sure to work through any disagreements professionally and stay open-minded through our conversations and will communicate our thoughts
 
+# What is Syllabus-to-Calendar Parser?
+
+Syllabus-to-Calendar Parser is a tool that allows users to copy and paste text from a course syllabus. The application uses string processing or a lightweight API to identify important due dates and display them in a custom, interactive dashboard calendar.
+
+## Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/danyman19/326_Project.git
+cd 326_Project
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the server
+
+```bash
+node server.js
+```
+
+### 4. Open app
+
+Go to
+
+```text
+http://localhost:3000
+```
