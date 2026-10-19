@@ -3,7 +3,7 @@ import { Ok, Err } from "../result.js";
 import { getAll, save } from "../repositories/eventsRepository.js";
 
 //validate the fields before an event is added to the file
-const validateEvent = ({ day, month, title, description } = {}) => {
+const validateEvent = ({ day, month, title, description="" } = {}) => {
   if (
     !Number.isInteger(day) ||
     !Number.isInteger(month) ||
