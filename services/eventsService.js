@@ -1,4 +1,3 @@
-
 import { Ok, Err } from "../result.js";
 import { getAll, save } from "../repositories/eventsRepository.js";
 
@@ -12,34 +11,31 @@ const validateEvent = ({ day, month, title, description } = {}) => {
   ) {
     return Err({
       status: 400,
-      message: "Day and month must be valid numbers"
+      message: "Day and month must be valid numbers",
     });
   }
 
   // validation to check the number of days allowed in the respective month
-  const daysInMonth = [
-    31, 28, 31, 30, 31, 30,
-    31, 31, 30, 31, 30, 31
-  ];
+  const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   if (day < 1 || day > daysInMonth[month - 1]) {
     return Err({
       status: 400,
-      message: "The selected day is not valid for that month"
+      message: "The selected day is not valid for that month",
     });
   }
 
   if (typeof title !== "string" || !title.trim()) {
     return Err({
       status: 400,
-      message: "Event title is required"
+      message: "Event title is required",
     });
   }
 
   if (typeof description !== "string") {
     return Err({
       status: 400,
-      message: "Event description must be text"
+      message: "Event description must be text",
     });
   }
 
@@ -47,7 +43,7 @@ const validateEvent = ({ day, month, title, description } = {}) => {
     day,
     month,
     title: title.trim(),
-    description: description.trim()
+    description: description.trim(),
   });
 };
 
@@ -63,8 +59,13 @@ export const createEvent = async (data) => {
   if (!result.ok) {
     return result;
   }
-
   const events = await getAll();
+
+  let id = 0;
+  for (let event of events) {
+    id = Math.max(id, event.event_id);
+  }
+  result.value.event_id = id + 1;
   events.push(result.value);
   await save(events);
 
@@ -72,20 +73,15 @@ export const createEvent = async (data) => {
 };
 
 // DELETE- removes first event matching all four field
-export const deleteEvent = async (data) => {
+export const deleteEvent = async (id) => {
   const events = await getAll();
 
-  const index = events.findIndex((event) =>
-    event.day === data.day &&
-    event.month === data.month &&
-    event.title === data.title &&
-    event.description === data.description
-  );
+  const index = events.findIndex((event) => event.event_id == id);
 
   if (index === -1) {
     return Err({
       status: 404,
-      message: "Event not found"
+      message: "Event not found",
     });
   }
 

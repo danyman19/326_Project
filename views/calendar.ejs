@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Calendar</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <% let currentDate = new Date();const year = currentDate.getFullYear();
+const month = currentDate.getMonth();const firstDay = new Date(year, month, 1).getDay();const numDays = new Date(year, month + 1, 0).getDate(); %>
+
+    <header class="site-header">
+      <h2>Calendar for <%= currentDate.toLocaleDateString("en-US", {month: "long", year: "numeric"}) %></h2>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/calendar">Calendar</a>
+      </nav>
+    </header>
+
+    <div class="popup" id="event-popup" hidden>
+      <h3 id="popup-header">Event header</h3>
+      <p id="popup-date"></p>
+      <p id="popup-text">Event text test</p>
+      <!-- <button id="popup-edit-button">Edit</button> -->
+      <button id="popup-delete-button">Delete</button>
+      <button id="popup-close-button">Close</button>
+    </div>
+    <div class="popup" id="submit-popup" hidden>
+      <form id="entry-form">
+        <input type="text" name="title" placeholder="Title">
+        <input type="text" name="description" placeholder="Description">
+        <button type="submit">Add entry</button>
+      </form>
+      <button id="submit-cancel">Cancel</button>
+    </div>
+
+    <div class="calendar">
+      <div>Sun</div>
+      <div>Mon</div>
+      <div>Tue</div>
+      <div>Wed</div>
+      <div>Thu</div>
+      <div>Fri</div>
+      <div>Sat</div>
+      <% for(let i = 0;i<firstDay;i++){ %>
+        <div class="day"></div>
+      <% } %>
+
+      <% for(let i = 1;i<=numDays;i++){ %>
+        <div class="day" data-day="<%= i %>" data-month="<%= month%>"><%= i %>
+          <% for(let event of events) { %>
+            <% if(event.day==i && event.month-1==month) { %>
+              <div class="event" data-event="<%= JSON.stringify(event) %>"> <%= event.title %> </div>
+          <% } } %>
+        </div>
+      <% } %>
+    </div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

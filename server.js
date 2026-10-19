@@ -4,17 +4,17 @@ import eventsRouter from "./routes/events.js";
 const app = express();
 const PORT = 3000;
 
+app.set("view engine", "ejs");
+app.set("views", "views");
+
+app.use(express.static("public"));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // home page route
 app.get("/", (req, res) => {
   res.send("Home page for syllabus!");
-});
-
-// calendar page route
-app.get("/calendar", (req, res) => {
-  res.send("Course calendar will appear here");
 });
 
 // events route
@@ -28,7 +28,7 @@ app.use((req, res) => {
 // handle unexpected errors
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).send('Something went wrong.');
+  res.status(500).send("Something went wrong.");
 });
 
 app.listen(PORT, () => {
