@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "day": 19,
+    "month": 10,
+    "title": "Frontend Completed",
+    "description": "Should be done now :D",
+    "event_id": 1
+  },
+  {
+    "day": 19,
+    "month": 10,
+    "title": "Backend Completed",
+    "description": "Nice",
+    "event_id": 2
+  },
+  {
+    "day": 20,
+    "month": 10,
+    "title": "Sprint 2 Due Date",
+    "description": "",
+    "event_id": 3
+  },
+  {
+    "day": 22,
+    "month": 10,
+    "title": "CS 230 Exam",
+    "description": "",
+    "event_id": 4
+  },
+  {
+    "day": 7,
+    "month": 10,
+    "title": "Birthday Party",
+    "description": "who's birthday is it?",
+    "event_id": 5
+  }
+]

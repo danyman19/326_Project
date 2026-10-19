@@ -1,10 +1,9 @@
-
 import * as eventsService from "../services/eventsService.js";
 
 // GET request
 export const list = async (req, res) => {
   const events = await eventsService.listEvents();
-  res.status(200).json(events);
+  res.status(200).render("calendar", { events });
 };
 
 // POST- creates an event
@@ -13,7 +12,7 @@ export const create = async (req, res) => {
 
   if (!result.ok) {
     res.status(result.error.status).json({
-      error: result.error.message
+      error: result.error.message,
     });
     return;
   }
@@ -23,11 +22,12 @@ export const create = async (req, res) => {
 
 // DELETE- removes an event based on the four fields
 export const destroy = async (req, res) => {
-  const result = await eventsService.deleteEvent(req.body);
+  const id = Number.parseInt(req.params.id);
+  const result = await eventsService.deleteEvent(id);
 
   if (!result.ok) {
     res.status(result.error.status).json({
-      error: result.error.message
+      error: result.error.message,
     });
     return;
   }
