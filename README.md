@@ -27,6 +27,12 @@ I decided to place the event validation in the service layer rather than the con
 
 We chose to store calendar events in events.json instead of MongoDB for now as it's easier to set up, test, and manage without needing a database. Although MongoDB would be better for larger applications with more users, but JSON was enough for our current feature. We can still switch to a database in the future by keeping the storage operations in the repository layer.
 
+### Daniel Qi
+
+#### Decision: Click a date to create an event
+
+I decided to, UI wise, have a user create an event by clicking on the date they want the event to be at. The alternative would be for the user instead to fill out a form where they have to manually enter the month and the date along with the title and description. I felt like it would be easier for the user to just click on they day they wanted which would also prevent user related errors when entering the date. Another reason this system works is because right now the calendar only shows the current month. If we were to add the ability to move between months it could be useful for the user to so be able to create an event without having to cycle to that month in the calendar.
+
 ## Setup
 
 ### 1. Clone the repository
