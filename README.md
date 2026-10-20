@@ -68,23 +68,23 @@ To access the calendar
 http://localhost:3000/events
 ```
 
-Calendar Feature
+# Calendar Feature
 
-## Overview
+### Overview
 
 For Sprint 2, our team implemented a calendar that allows users to add, view, and delete events. Users can select a date, view, and delete events. Events are saved in `events.json` and remain available after restarting the server.
 
-## How to use the Calendar
+### How to use the Calendar
 
 1. Start the server using npm start
 2. Open http://localhost:3000/events
 3. Click on a date in the calendar to add an event
 4. Enter an event title and description
-5. Click "Add entry" to save the event. The new event event will be on the selected date. lick "Cancel" if you don't want to add the event
+5. Click "Add event" to save the event. The new event event will be on the selected date. lick "Cancel" if you don't want to add the event
 6. Click on an existing event to view its title, date, and description
 7. Click Delete to remove the event, or Close to return to the calendar without making changes
 
-## Validation and Error Handling
+### Validation and Error Handling
 
 **Day and month**: must be valid integers, with the month between 1 and 12 and the day within the allowed range. Invalid dates will return `400 Bad Request`.
 **Event title**: must be nonempty text. Missing or invalid titles return `400 Bad Request`.
@@ -94,6 +94,6 @@ For Sprint 2, our team implemented a calendar that allows users to add, view, an
 **Server errors**: Unexpected errors are logged and return `500 Internal Server Error`
 **Frontend errors**: displays alerts for failed requests, connection errors, or timeouts.
 
-## System Diagram
+### System Diagram
 
 ![System Diagram](system_diagram.jpeg)
