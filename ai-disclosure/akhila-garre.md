@@ -1,1 +1,4 @@
-No AI for both sprint 0 and 1
+Sprint 0 & 1- 
+No AI used
+Sprint 2- 
+Used AI to help review the input validation for checking the days in a month to make sure that the selected day was valid for the given month. I asked AI for help with understanding whether my validation correctly handled invalid days for each month. The feedback helped me evaluate how my code address these edge cases to check the day against the number of days available in that respective month. For example, if someone entered 31 for February that would not be accepted. I developed the code myself however was facing an error with the month indexing. I was incorrectly going through it as the arrays start at index 0 but the months go by 1-12 so I had changed daysInMonth[month-1]. Otherwise the code was checking the wrong month and also wouldn't work for the month of December. The code now correctly vlaidates that the selected day is within the correct range for its respective month. AI looked at the validation section for daysInMonth. 
