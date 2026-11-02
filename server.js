@@ -25,8 +25,11 @@ app.use((req, res) => {
   res.status(404).send("Page not found.");
 });
 
-// handle unexpected errors
+// handle invalid JSON requests
 app.use((err, req, res, next) => {
+  if (err.status === 400 && err.type === "entity.parse.failed"){
+    return res.status(400).send("Invalid JSON");
+  }
   console.error(err);
   res.status(500).send("Something went wrong.");
 });

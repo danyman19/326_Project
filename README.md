@@ -86,13 +86,14 @@ For Sprint 2, our team implemented a calendar that allows users to add, view, an
 
 ### Validation and Error Handling
 
-**Day and month**: must be valid integers, with the month between 1 and 12 and the day within the allowed range. Invalid dates will return `400 Bad Request`.
-**Event title**: must be nonempty text. Missing or invalid titles return `400 Bad Request`.
-**Event description**: Optional, but must be text. Invalid descriptions return `400 Bad Request`.
-**Event deletion**: delete a nonexistent event return `404 Not Found`.
-**Unknown routes**: requests to nonexistent routes return `404 Not Found`.
-**Server errors**: Unexpected errors are logged and return `500 Internal Server Error`
-**Frontend errors**: displays alerts for failed requests, connection errors, or timeouts.
+- **Day and month**: must be valid integers, with the month between 1 and 12 and the day within the allowed range. Invalid dates will return `400 Bad Request`.
+- **Event title**: must be nonempty text. Missing or invalid titles return `400 Bad Request`.
+- **Event description**: Optional, but must be text. Invalid descriptions return `400 Bad Request`.
+- **Invalid JSON requests**: Malformed JSON and a request body of null return `400 Bad Request`.
+- **Event deletion**: delete a nonexistent event return `404 Not Found`.
+- **Unknown routes**: requests to nonexistent routes return `404 Not Found`.
+- **Server errors**: Unexpected errors are logged and return `500 Internal Server Error`.
+- **Frontend errors**: displays alerts for failed requests, connection errors, or timeouts.
 
 ### System Diagram
 
