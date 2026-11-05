@@ -69,7 +69,7 @@ export const createEvent = async (data) => {
 
 // DELETE- removes first event matching all four field
 export const deleteEvent = async (id) => {
-  const event = await removeById();
+  const event = await removeById(id);
 
   if (!event) {
     return Err({
