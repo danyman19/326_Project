@@ -1,8 +1,13 @@
 import express from "express";
 import eventsRouter from "./routes/events.js";
+import mongoose from "mongoose";
 
 const app = express();
 const PORT = 3000;
+
+await mongoose.connect(
+  process.env.MONGODB_URI || 'mongodb://dev:devpassword@mongo:27017/devdb?authSource=admin'
+);
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -33,6 +38,7 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send("Something went wrong.");
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
