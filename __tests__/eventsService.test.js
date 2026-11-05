@@ -56,6 +56,18 @@ test('createEvent rejects a month outside the valid range', async () => {
   expect(result.error.status).toBe(400);
 });
 
+test('createEvent rejects a month below 1', async () => {
+  const result = await createEvent({
+    day: 5,
+    month: 0,
+    title: 'Meeting',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Day and month must be valid numbers');
+});
+
 test('createEvent rejects a day that does not exist in the month', async () => {
   const result = await createEvent({
     day: 31,
@@ -92,6 +104,19 @@ test('createEvent rejects a non-string description', async () => {
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
   expect(result.error.message).toBe('Event description must be text');
+});
+
+// make sure invalid events not saved
+test('createEvent does not save an event with invalid information', async () => {
+  const result = await createEvent({
+    day: 5,
+    month: 11,
+    title: '',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(getAll).not.toHaveBeenCalled();
+  expect(save).not.toHaveBeenCalled();
 });
 
 //successful event creation tests
@@ -155,6 +180,38 @@ test('createEvent assigns the next available event ID', async () => {
   expect(result.value.event_id).toBe(5);
 });
 
+test('createEvent rejects a missing day', async () => {
+  const result = await createEvent({
+    month: 11,
+    title: 'Team Meeting',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+});
+
+test('createEvent rejects a missing month', async () => {
+  const result = await createEvent({
+    day: 5,
+    title: 'Team Meeting',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+});
+
+test('createEvent rejects a title containing only whitespace', async () => {
+  const result = await createEvent({
+    day: 5,
+    month: 11,
+    title: '    ',
+  });
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Event title is required');
+});
+
 //delete tests
 test('deleteEvent returns an error when the event does not exist', async () => {
   const result = await deleteEvent(99);
@@ -162,6 +219,13 @@ test('deleteEvent returns an error when the event does not exist', async () => {
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(404);
   expect(result.error.message).toBe('Event not found');
+});
+
+test('deleteEvent does not save when the event does not exist', async () => {
+  const result = await deleteEvent(99);
+
+  expect(result.ok).toBe(false);
+  expect(save).not.toHaveBeenCalled();
 });
 
 test('deleteEvent removes an existing event', async () => {
