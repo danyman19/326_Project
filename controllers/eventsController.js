@@ -20,9 +20,9 @@ export const create = async (req, res) => {
   res.status(201).json(result.value);
 };
 
-// DELETE- removes an event based on the four fields
+// DELETE- removes an event by MongoDB ID
 export const destroy = async (req, res) => {
-  const id = Number.parseInt(req.params.id);
+  const id = req.params.id;
   const result = await eventsService.deleteEvent(id);
 
   if (!result.ok) {

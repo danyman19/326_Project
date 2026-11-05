@@ -1,7 +1,8 @@
 import { Ok, Err } from "../result.js";
-import { getAll, save } from "../repositories/eventsRepository.js";
+import { getAll, create, removeById } from "../repositories/eventsRepository.js";
+import { toEventDto } from "../dtos/eventDto.js";
 
-//validate the fields before an event is added to the file
+//validate the fields before saving to the database
 const validateEvent = ({ day, month, title, description="" } = {}) => {
   if (
     !Number.isInteger(day) ||
@@ -49,7 +50,8 @@ const validateEvent = ({ day, month, title, description="" } = {}) => {
 
 // GET request
 export const listEvents = async () => {
-  return await getAll();
+  const events = await getAll();
+  return events.map(toEventDto);
 };
 
 // POST request saves the event
@@ -59,34 +61,22 @@ export const createEvent = async (data) => {
   if (!result.ok) {
     return result;
   }
-  const events = await getAll();
 
-  let id = 0;
-  for (let event of events) {
-    id = Math.max(id, event.event_id);
-  }
-  result.value.event_id = id + 1;
-  events.push(result.value);
-  await save(events);
-
-  return Ok(result.value);
+  return Ok(toEventDto(
+    await create(result.value)
+  ));
 };
 
 // DELETE- removes first event matching all four field
 export const deleteEvent = async (id) => {
-  const events = await getAll();
+  const event = await removeById();
 
-  const index = events.findIndex((event) => event.event_id == id);
-
-  if (index === -1) {
+  if (!event) {
     return Err({
       status: 404,
       message: "Event not found",
     });
   }
-
-  events.splice(index, 1);
-  await save(events);
 
   return Ok(null);
 };
