@@ -41,6 +41,10 @@ For Sprint 3, I decided to switch from JSON file storage to MongoDB using Mongoo
 
 I decided to, UI wise, have a user create an event by clicking on the date they want the event to be at. The alternative would be for the user instead to fill out a form where they have to manually enter the month and the date along with the title and description. I felt like it would be easier for the user to just click on they day they wanted which would also prevent user related errors when entering the date. Another reason this system works is because right now the calendar only shows the current month. If we were to add the ability to move between months it could be useful for the user to so be able to create an event without having to cycle to that month in the calendar.
 
+### Design Decision Sprint 3: Where the remove button was and how it affected the HTMX
+
+When building the UI I decided to have the remove button within the popup instead of on the event object itself. The alternative would be for the remove button to be directly on the event. One upside to this method is that when setting up the HTMX, you can easily have the hx-target be itself, meaning when an empty send is sent it can easily be destroyed. One reason I chose not to do this method is that when the UI was shrunk to be the width of a phone (375 px), the size of the event was tiny and a remove button would completely block out the clickability of the event. To circumvent the above problem I had to dynamically set the hx-target based on what event was clicked.
+
 ## Setup
 
 ### 1. Clone the repository
@@ -210,7 +214,9 @@ We added Tailwind CSS to improve the calendar's layout, buttons, spacing, and re
 ![System Diagram](system_diagram.jpeg)
 
 ### Jest Service-Layer Tests
-We added Jest tests for the event service layer in __tests__/eventsService.test.js. The tests make sure that the service correctly handles event creation, input validation and deletion including cases such as invalid dates, missing or empty titles, invalid descriptions, and also attempts to delete events that do not exist. The repository functions are mocked using jest.unstable_mockModule(), so the tests focus on service-layer business logic without requiring a running MongoDB database. 
+
+We added Jest tests for the event service layer in **tests**/eventsService.test.js. The tests make sure that the service correctly handles event creation, input validation and deletion including cases such as invalid dates, missing or empty titles, invalid descriptions, and also attempts to delete events that do not exist. The repository functions are mocked using jest.unstable_mockModule(), so the tests focus on service-layer business logic without requiring a running MongoDB database.
 
 #### Test file to run:
-Run 'npm test' from project root. Tests located in __tests__/eventsService.test.js. 
+
+Run 'npm test' from project root. Tests located in **tests**/eventsService.test.js.
