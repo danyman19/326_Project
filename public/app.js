@@ -5,83 +5,24 @@ const popupText = document.getElementById("popup-text");
 let selectedEvent = null;
 let selectedDay = null;
 
+const eventDay = document.getElementById("event-day");
+const eventMonth = document.getElementById("event-month");
+
 const form = document.querySelector("#entry-form");
 const submitPopup = document.getElementById("submit-popup");
 const submitCancel = document.getElementById("submit-cancel");
-
-// Every request gives up after five seconds instead of waiting forever.
-const timedFetch = (url, options = {}) =>
-  fetch(url, { ...options, signal: AbortSignal.timeout(5000) });
-
-// Send a request and return the JSON the server answered with. Anything
-// that goes wrong (no answer within five seconds, no connection, an error
-// status, a body that is not JSON) throws one Error whose message can go
-// straight to the person using the page.
-const fetchJSON = async (url, options) => {
-  let response;
-  try {
-    response = await timedFetch(url, options);
-  } catch (error) {
-    throw new Error(
-      error.name === "TimeoutError"
-        ? "The server did not answer within five seconds."
-        : "Could not reach the server.",
-    );
-  }
-
-  let body = {};
-  try {
-    body = await response.json();
-  } catch {
-    // An empty body, or an error page in HTML: the status still says enough.
-  }
-
-  if (!response.ok) {
-    throw new Error(body.error || `The server answered ${response.status}.`);
-  }
-  return body;
-};
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  console.log("detected");
-
-  const data = new FormData(form);
-  const entry = Object.fromEntries(data);
-  const button = form.querySelector("button");
-
-  entry.day = Number.parseInt(selectedDay.dataset.day);
-  entry.month = Number.parseInt(selectedDay.dataset.month) + 1;
-
-  button.disabled = true;
-  try {
-    const save = await fetchJSON("/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(entry),
-    });
-
-    const event = document.createElement("div");
-    event.className = "event";
-    event.textContent = entry.title;
-    event.dataset.event = JSON.stringify(save);
-
-    selectedDay.appendChild(event);
-
-    form.reset();
-    submitPopup.hidden = true;
-  } catch (error) {
-    alert(`Your entry was not saved. ${error.message}`);
-  }
-  button.disabled = false;
-});
+const deleteButton = document.getElementById("popup-delete-button");
 
 submitCancel.addEventListener("click", async (event) => {
   submitPopup.hidden = true;
 });
 
-calendar.addEventListener("click", async (event) => {
+document.addEventListener("click", async (event) => {
+  const target = event.target;
+  const calendarArea = target.closest(".calendar");
+
+  if (!calendarArea) return;
+
   const eventClicked = event.target.closest(".event");
   const dayClicked = event.target.closest(".day");
 
@@ -92,18 +33,42 @@ calendar.addEventListener("click", async (event) => {
     popupHeader.textContent = data.title + " " + data.month + "/" + data.day;
     popupText.textContent = data.description;
 
-    const pos = eventClicked.getBoundingClientRect();
-    eventPopup.style.top = pos.top + "px";
-    eventPopup.style.left = pos.left + "px";
+    // const pos = eventClicked.getBoundingClientRect();
+    // eventPopup.style.top = pos.top + "px";
+    // eventPopup.style.left = pos.left + "px";
 
     eventPopup.hidden = false;
+
+    deleteButton.setAttribute("hx-delete", "/events/" + data.event_id);
+    deleteButton.setAttribute("hx-target", "#" + selectedEvent.id);
+
+    htmx.process(deleteButton);
   } else if (dayClicked) {
     selectedDay = dayClicked;
 
-    const pos = dayClicked.getBoundingClientRect();
-    submitPopup.style.top = pos.top + "px";
-    submitPopup.style.left = pos.left + "px";
+    eventDay.value = Number.parseInt(selectedDay.dataset.day);
+    eventMonth.value = Number.parseInt(selectedDay.dataset.month) + 1;
+
+    const targetId = `event-list-${eventMonth.value}-${eventDay.value}`;
+
+    form.setAttribute("hx-target", `#${targetId}`);
+
+    // const pos = dayClicked.getBoundingClientRect();
+    // submitPopup.style.top = pos.top + "px";
+    // submitPopup.style.left = pos.left + "px";
     submitPopup.hidden = false;
+  }
+});
+
+document.body.addEventListener("htmx:afterRequest", (event) => {
+  if (event.detail.successful) {
+    if (event.detail.elt.id == "entry-form") {
+      form.reset();
+      submitPopup.hidden = true;
+    }
+    if (event.detail.elt.id == "popup-delete-button") {
+      popup.hidden = true;
+    }
   }
 });
 
@@ -122,26 +87,5 @@ popup.addEventListener("click", async (event) => {
   }
   if (button.matches("#popup-close-button")) {
     popup.hidden = true;
-    return;
-  }
-
-  if (button.matches("#popup-delete-button")) {
-    const close_button = document.getElementById("popup-close-button");
-
-    button.disabled = true;
-    close_button.disabled = true;
-
-    const id = JSON.parse(selectedEvent.dataset.event).event_id;
-    try {
-      await fetchJSON(`/events/${id}`, { method: "DELETE" });
-
-      selectedEvent.remove();
-      popup.hidden = true;
-    } catch (error) {
-      alert(`That entry was not deleted. ${error.message}`);
-    }
-
-    button.disabled = false;
-    close_button.disabled = false;
   }
 });
