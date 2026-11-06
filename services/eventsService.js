@@ -69,7 +69,9 @@ export const listEvents = async (month, year) => {
   const numDays = new Date(year, month + 1, 0).getDate();
 
   const events = await getAll();
-  const eventDtos = events.map(toEventDto); //.filter((x) => x.month == month);
+  const eventDtos = events
+  .map(toEventDto)
+  .filter((event) => event.month === month + 1);
 
   return Ok({ events: eventDtos, month, year, firstDay, numDays });
 };
