@@ -209,10 +209,6 @@ We added Tailwind CSS to improve the calendar's layout, buttons, spacing, and re
 
 - Resize the browser or use Chrome Developer Tools to see how the calendar adapts to smaller screens.
 
-### System Diagram
-
-![System Diagram](system_diagram.jpeg)
-
 ### Jest Service-Layer Tests
 
 We added Jest tests for the event service layer in **tests**/eventsService.test.js. The tests make sure that the service correctly handles event creation, input validation and deletion including cases such as invalid dates, missing or empty titles, invalid descriptions, and also attempts to delete events that do not exist. The repository functions are mocked using jest.unstable_mockModule(), so the tests focus on service-layer business logic without requiring a running MongoDB database.
@@ -220,3 +216,8 @@ We added Jest tests for the event service layer in **tests**/eventsService.test.
 #### Test file to run:
 
 Run 'npm test' from project root. Tests located in **tests**/eventsService.test.js.
+
+### System Diagram
+
+![System Diagram Sprint 2](system_diagram_sprint2.jpeg)
+![System Diagram Sprint 3](sys_diagram_sprint3.jpg)
