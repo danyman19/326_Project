@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/style.css"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,8 @@
     "morgan": "^1.12.1"
   },
   "devDependencies": {
-    "jest": "^30.5.2"
+    "@tailwindcss/cli": "^4.3.4",
+    "jest": "^30.5.2",
+    "tailwindcss": "^4.3.4"
   }
 }

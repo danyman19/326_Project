@@ -1,5 +1,5 @@
 <div id="calendar-container">
-    <header class="site-header">
+    <header class="site-header flex flex-col gap-2 border-b-2 border-gray-300 pb-2 mb-4 sm:flex-row sm:justify-between sm:items-center" >
       <button hx-get="/events?month=<%= month-1 %>" hx-target="#calendar-container" hx-swap="outerHTML" <%= month==0? "disabled" : "" %>>Previous</button>
         <h2>Calendar for <%= new Date(year, month).toLocaleDateString("en-US", {month: "long", year: "numeric"}) %></h2>
         <button hx-get="/events?month=<%= month+1 %>" hx-target="#calendar-container" hx-swap="outerHTML" <%= month==11? "disabled" : "" %>>Next</button>
@@ -8,7 +8,7 @@
         <a href="/">Home</a>
         <a href="/events">Calendar</a>
       </nav>
-    </header><div class="calendar">
+    </header><div class="calendar gap-0 sm:gap-1 md:gap-2">
       <div>Sun</div>
       <div>Mon</div>
       <div>Tue</div>
@@ -25,9 +25,7 @@
           <div id="event-list-<%= month + 1 %>-<%= i %>">
             <% for(let event of events) { %>
               <% if(event.day==i && event.month-1==month) { %>
-                <div class="event" id="event-<%= event.event_id %>"data-event="<%= JSON.stringify(event) %>">
-                  <%= event.title %>
-                </div>
+                <%- include("event", { event }) %>
             <% } } %>
           </div>
         </div>

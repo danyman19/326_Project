@@ -33,9 +33,9 @@ document.addEventListener("click", async (event) => {
     popupHeader.textContent = data.title + " " + data.month + "/" + data.day;
     popupText.textContent = data.description;
 
-    const pos = eventClicked.getBoundingClientRect();
-    eventPopup.style.top = pos.top + "px";
-    eventPopup.style.left = pos.left + "px";
+    // const pos = eventClicked.getBoundingClientRect();
+    // eventPopup.style.top = pos.top + "px";
+    // eventPopup.style.left = pos.left + "px";
 
     eventPopup.hidden = false;
 
@@ -53,9 +53,9 @@ document.addEventListener("click", async (event) => {
 
     form.setAttribute("hx-target", `#${targetId}`);
 
-    const pos = dayClicked.getBoundingClientRect();
-    submitPopup.style.top = pos.top + "px";
-    submitPopup.style.left = pos.left + "px";
+    // const pos = dayClicked.getBoundingClientRect();
+    // submitPopup.style.top = pos.top + "px";
+    // submitPopup.style.left = pos.left + "px";
     submitPopup.hidden = false;
   }
 });
