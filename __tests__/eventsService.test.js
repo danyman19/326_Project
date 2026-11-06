@@ -1,4 +1,3 @@
-
 import { jest } from '@jest/globals';
 
 //mock events repository
@@ -222,7 +221,7 @@ test('deleteEvent returns an error when the event does not exist', async () => {
   expect(removeById).toHaveBeenCalledWith('missing-id');
 });
 
-test('deleteEvent does not delete when the event does not exist', async () => {
+test('deleteEvent calls removeById once when the event does not exist', async () => {
   removeById.mockResolvedValue(null);
 
   const result = await deleteEvent('missing-id');
@@ -247,8 +246,8 @@ test('deleteEvent removes an existing event', async () => {
   expect(removeById).toHaveBeenCalledWith('existing-event-id');
 });
 
-//list test
-test('listEvents returns all events from the repository', async () => {
+//list tests
+test('listEvents returns calendar information and only events for the selected month', async () => {
   const events = [
     {
       _id: 'event-id-1',
@@ -264,28 +263,69 @@ test('listEvents returns all events from the repository', async () => {
       title: 'Second Event',
       description: 'Another meeting',
     },
+    {
+      _id: 'event-id-3',
+      day: 10,
+      month: 12,
+      title: 'December Event',
+      description: 'A different month',
+    },
   ];
 
   getAll.mockResolvedValue(events);
 
-  const result = await listEvents();
+  const result = await listEvents(10, 2026);
 
-  expect(result).toEqual([
-    {
-      event_id: 'event-id-1',
-      day: 5,
-      month: 11,
-      title: 'First Event',
-      description: '',
-    },
-    {
-      event_id: 'event-id-2',
-      day: 6,
-      month: 11,
-      title: 'Second Event',
-      description: 'Another meeting',
-    },
-  ]);
+  expect(result.ok).toBe(true);
+  expect(result.value).toEqual({
+    events: [
+      {
+        event_id: 'event-id-1',
+        day: 5,
+        month: 11,
+        title: 'First Event',
+        description: '',
+      },
+      {
+        event_id: 'event-id-2',
+        day: 6,
+        month: 11,
+        title: 'Second Event',
+        description: 'Another meeting',
+      },
+    ],
+    month: 10,
+    year: 2026,
+    firstDay: 0,
+    numDays: 30,
+  });
 
   expect(getAll).toHaveBeenCalledTimes(1);
+});
+
+test('listEvents rejects a month below 0', async () => {
+  const result = await listEvents(-1, 2026);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Invalid month');
+  expect(getAll).not.toHaveBeenCalled();
+});
+
+test('listEvents rejects a month above 11', async () => {
+  const result = await listEvents(12, 2026);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Invalid month');
+  expect(getAll).not.toHaveBeenCalled();
+});
+
+test('listEvents rejects a non-integer month', async () => {
+  const result = await listEvents(5.5, 2026);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Invalid month');
+  expect(getAll).not.toHaveBeenCalled();
 });
