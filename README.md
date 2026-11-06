@@ -219,5 +219,5 @@ Run 'npm test' from project root. Tests located in **tests**/eventsService.test.
 
 ### System Diagram
 
-![System Diagram Sprint 2](system_diagram_sprint2.jpeg)
+![System Diagram](system_diagram.jpeg)
 ![System Diagram Sprint 3](sys_diagram_sprint3.jpg)
