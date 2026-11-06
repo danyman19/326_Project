@@ -102,3 +102,9 @@ For Sprint 2, our team implemented a calendar that allows users to add, view, an
 ### System Diagram
 
 ![System Diagram](system_diagram.jpeg)
+
+### Jest Service-Layer Tests
+We added Jest tests for the event service layer in __tests__/eventsService.test.js. The tests make sure that the service correctly handles event creation, input validation and deletion including cases such as invalid dates, missing or empty titles, invalid descriptions, and also attempts to delete events that do not exist. The repository functions are mocked using jest.unstable_mockModule(), so the tests focus on service-layer business logic without requiring a running MongoDB database. 
+
+#### Test file to run:
+Run 'npm test' from project root. Tests located in __tests__/eventsService.test.js. 
