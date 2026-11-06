@@ -3,21 +3,29 @@ import { jest } from '@jest/globals';
 //mock events repository
 jest.unstable_mockModule('../repositories/eventsRepository.js', () => ({
   getAll: jest.fn(),
-  save: jest.fn(),
+  create: jest.fn(),
+  removeById: jest.fn(),
 }));
 
 //import the service after registering mock
 const { createEvent, deleteEvent, listEvents } =
   await import('../services/eventsService.js');
 
-const { getAll, save } =
+const { getAll, create, removeById } =
   await import('../repositories/eventsRepository.js');
 
 //reset mocks before each test
 beforeEach(() => {
   jest.clearAllMocks();
+
   getAll.mockResolvedValue([]);
-  save.mockResolvedValue(undefined);
+
+  create.mockImplementation(async (data) => ({
+    _id: 'mongo-event-id',
+    ...data,
+  }));
+
+  removeById.mockResolvedValue(null);
 });
 
 //event validation tests:
@@ -106,8 +114,8 @@ test('createEvent rejects a non-string description', async () => {
   expect(result.error.message).toBe('Event description must be text');
 });
 
-// make sure invalid events not saved
-test('createEvent does not save an event with invalid information', async () => {
+// make sure invalid events not created
+test('createEvent does not create an event with invalid information', async () => {
   const result = await createEvent({
     day: 5,
     month: 11,
@@ -115,8 +123,7 @@ test('createEvent does not save an event with invalid information', async () => 
   });
 
   expect(result.ok).toBe(false);
-  expect(getAll).not.toHaveBeenCalled();
-  expect(save).not.toHaveBeenCalled();
+  expect(create).not.toHaveBeenCalled();
 });
 
 //successful event creation tests
@@ -130,14 +137,20 @@ test('createEvent creates an event with valid information', async () => {
 
   expect(result.ok).toBe(true);
   expect(result.value).toEqual({
+    event_id: 'mongo-event-id',
     day: 5,
     month: 11,
     title: 'Team Meeting',
     description: 'Discuss Sprint 3',
-    event_id: 1,
   });
 
-  expect(save).toHaveBeenCalledTimes(1);
+  expect(create).toHaveBeenCalledTimes(1);
+  expect(create).toHaveBeenCalledWith({
+    day: 5,
+    month: 11,
+    title: 'Team Meeting',
+    description: 'Discuss Sprint 3',
+  });
 });
 
 test('createEvent allows an optional description', async () => {
@@ -162,22 +175,6 @@ test('createEvent trims whitespace from title and description', async () => {
   expect(result.ok).toBe(true);
   expect(result.value.title).toBe('Team Meeting');
   expect(result.value.description).toBe('Discuss Sprint 3');
-});
-
-test('createEvent assigns the next available event ID', async () => {
-  getAll.mockResolvedValue([
-    { event_id: 1, title: 'First Event' },
-    { event_id: 4, title: 'Second Event' },
-  ]);
-
-  const result = await createEvent({
-    day: 5,
-    month: 11,
-    title: 'Third Event',
-  });
-
-  expect(result.ok).toBe(true);
-  expect(result.value.event_id).toBe(5);
 });
 
 test('createEvent rejects a missing day', async () => {
@@ -214,46 +211,121 @@ test('createEvent rejects a title containing only whitespace', async () => {
 
 //delete tests
 test('deleteEvent returns an error when the event does not exist', async () => {
-  const result = await deleteEvent(99);
+  removeById.mockResolvedValue(null);
+
+  const result = await deleteEvent('missing-id');
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(404);
   expect(result.error.message).toBe('Event not found');
+  expect(removeById).toHaveBeenCalledWith('missing-id');
 });
 
-test('deleteEvent does not save when the event does not exist', async () => {
-  const result = await deleteEvent(99);
+test('deleteEvent calls removeById once when the event does not exist', async () => {
+  removeById.mockResolvedValue(null);
+
+  const result = await deleteEvent('missing-id');
 
   expect(result.ok).toBe(false);
-  expect(save).not.toHaveBeenCalled();
+  expect(removeById).toHaveBeenCalledTimes(1);
 });
 
 test('deleteEvent removes an existing event', async () => {
-  getAll.mockResolvedValue([
-    { event_id: 1, title: 'First Event' },
-    { event_id: 2, title: 'Second Event' },
-  ]);
+  removeById.mockResolvedValue({
+    _id: 'existing-event-id',
+    day: 5,
+    month: 11,
+    title: 'Team Meeting',
+    description: 'Discuss Sprint 3',
+  });
 
-  const result = await deleteEvent(1);
+  const result = await deleteEvent('existing-event-id');
 
   expect(result.ok).toBe(true);
-  expect(save).toHaveBeenCalledTimes(1);
-  expect(save).toHaveBeenCalledWith([
-    { event_id: 2, title: 'Second Event' },
-  ]);
+  expect(result.value).toBe(null);
+  expect(removeById).toHaveBeenCalledWith('existing-event-id');
 });
 
-//list test
-test('listEvents returns all events from the repository', async () => {
+//list tests
+test('listEvents returns calendar information and only events for the selected month', async () => {
   const events = [
-    { event_id: 1, title: 'First Event' },
-    { event_id: 2, title: 'Second Event' },
+    {
+      _id: 'event-id-1',
+      day: 5,
+      month: 11,
+      title: 'First Event',
+      description: '',
+    },
+    {
+      _id: 'event-id-2',
+      day: 6,
+      month: 11,
+      title: 'Second Event',
+      description: 'Another meeting',
+    },
+    {
+      _id: 'event-id-3',
+      day: 10,
+      month: 12,
+      title: 'December Event',
+      description: 'A different month',
+    },
   ];
 
   getAll.mockResolvedValue(events);
 
-  const result = await listEvents();
+  const result = await listEvents(10, 2026);
 
-  expect(result).toEqual(events);
+  expect(result.ok).toBe(true);
+  expect(result.value).toEqual({
+    events: [
+      {
+        event_id: 'event-id-1',
+        day: 5,
+        month: 11,
+        title: 'First Event',
+        description: '',
+      },
+      {
+        event_id: 'event-id-2',
+        day: 6,
+        month: 11,
+        title: 'Second Event',
+        description: 'Another meeting',
+      },
+    ],
+    month: 10,
+    year: 2026,
+    firstDay: 0,
+    numDays: 30,
+  });
+
   expect(getAll).toHaveBeenCalledTimes(1);
+});
+
+test('listEvents rejects a month below 0', async () => {
+  const result = await listEvents(-1, 2026);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Invalid month');
+  expect(getAll).not.toHaveBeenCalled();
+});
+
+test('listEvents rejects a month above 11', async () => {
+  const result = await listEvents(12, 2026);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Invalid month');
+  expect(getAll).not.toHaveBeenCalled();
+});
+
+test('listEvents rejects a non-integer month', async () => {
+  const result = await listEvents(5.5, 2026);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(400);
+  expect(result.error.message).toBe('Invalid month');
+  expect(getAll).not.toHaveBeenCalled();
 });

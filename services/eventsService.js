@@ -1,9 +1,19 @@
 import { Ok, Err } from "../result.js";
-import { getAll, create, removeById } from "../repositories/eventsRepository.js";
+import {
+  getAll,
+  create,
+  removeById,
+} from "../repositories/eventsRepository.js";
 import { toEventDto } from "../dtos/eventDto.js";
 
+const validateMonth = (month) => {
+  if (!Number.isInteger(month) || month < 0 || month > 11)
+    return Err({ status: 400, message: "Invalid month" });
+  return Ok(null);
+};
+
 //validate the fields before saving to the database
-const validateEvent = ({ day, month, title, description="" } = {}) => {
+const validateEvent = ({ day, month, title, description = "" } = {}) => {
   if (
     !Number.isInteger(day) ||
     !Number.isInteger(month) ||
@@ -49,27 +59,39 @@ const validateEvent = ({ day, month, title, description="" } = {}) => {
 };
 
 // GET request
-export const listEvents = async () => {
+export const listEvents = async (month, year) => {
+  const result = validateMonth(month);
+  if (!result.ok) {
+    return result;
+  }
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const numDays = new Date(year, month + 1, 0).getDate();
+
   const events = await getAll();
-  return events.map(toEventDto);
+  const eventDtos = events
+  .map(toEventDto)
+  .filter((event) => event.month === month + 1);
+
+  return Ok({ events: eventDtos, month, year, firstDay, numDays });
 };
 
 // POST request saves the event
 export const createEvent = async (data) => {
+  data.day = Number(data.day);
+  data.month = Number(data.month);
   const result = validateEvent(data);
 
   if (!result.ok) {
     return result;
   }
 
-  return Ok(toEventDto(
-    await create(result.value)
-  ));
+  return Ok(toEventDto(await create(result.value)));
 };
 
 // DELETE- removes first event matching all four field
 export const deleteEvent = async (id) => {
-  const event = await removeById();
+  const event = await removeById(id);
 
   if (!event) {
     return Err({

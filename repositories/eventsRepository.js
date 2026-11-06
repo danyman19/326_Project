@@ -23,5 +23,5 @@ export const updateById = async (id, data) =>
   Event.findByIdAndUpdate(id, data, { new: true }).lean();
 
 export const removeById = async (id) => {
-  Event.findByIdAndDelete(id).lean();
+  return Event.findByIdAndDelete(id).lean();
 };
