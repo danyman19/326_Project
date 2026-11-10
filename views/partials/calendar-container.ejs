@@ -5,10 +5,10 @@
         <button hx-get="/events?month=<%= month+1 %>" hx-target="#calendar-container" hx-swap="outerHTML" <%= month==11? "disabled" : "" %>>Next</button>
 
       <nav>
-        <a href="/">Home</a>
-        <a href="/events">Calendar</a>
+        <a class="mr-4" href="/">Home</a>
+        <a class="mr-4" href="/events">Calendar</a>
       </nav>
-    </header><div class="calendar gap-0 sm:gap-1 md:gap-2">
+    </header><div class="calendar grid grid-cols-7 gap-0 sm:gap-1 md:gap-2">
       <div>Sun</div>
       <div>Mon</div>
       <div>Tue</div>
@@ -21,7 +21,7 @@
       <% } %>
 
       <% for(let i = 1;i<=numDays;i++){ %>
-        <div class="day" data-day="<%= i %>" data-month="<%= month%>"><%= i %>
+        <div class="day border-2 border-gray-300 p-2 min-h-[60px] min-w-0 overflow-hidden select-none hover:bg-blue-50" data-day="<%= i %>" data-month="<%= month%>"><%= i %>
           <div id="event-list-<%= month + 1 %>-<%= i %>">
             <% for(let event of events) { %>
               <% if(event.day==i && event.month-1==month) { %>

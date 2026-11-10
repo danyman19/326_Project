@@ -1,5 +1,5 @@
 <div
-  class="popup fixed w-[90vw] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[600px]"
+  class="popup fixed w-[90vw] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[600px] bg-white border-4 border-gray-300 p-4"
   id="event-popup"
   hidden
 >
@@ -7,12 +7,22 @@
   <p id="popup-date"></p>
   <p id="popup-text">Event text test</p>
   <!-- <button id="popup-edit-button">Edit</button> -->
-  <button id="popup-delete-button" hx-swap="delete">Delete</button>
-  <button id="popup-close-button">Close</button>
+  <button
+    id="popup-delete-button" class=" border border-[#d33] text-[#d33]"
+    hx-swap="delete"
+  >
+    Delete
+  </button>
+  <button
+    id="popup-close-button"
+    class="border border-[#3cb371] text-[#3cb371]"
+  >
+    Close
+  </button>
 </div>
 
 <div
-  class="popup fixed w-[90vw] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[800px] flex flex-col gap-2 pb-2 mb-4 sm:flex-row sm:justify-between sm:items-center"
+  class="popup fixed w-[90vw] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[800px] flex flex-col gap-2 pb-2 mb-4 sm:flex-row sm:justify-between sm:items-center bg-white border-4 border-gray-300 p-4"
   id="submit-popup"
   hidden
 >
@@ -30,5 +40,7 @@
 
     <button type="submit">Add event</button>
   </form>
-  <button id="submit-cancel">Cancel</button>
+  <button id="submit-cancel" class="border border-[#3cb371] text-[#3cb371]">
+    Cancel
+  </button>
 </div>
