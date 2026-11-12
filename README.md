@@ -207,5 +207,4 @@ We added Tailwind CSS to improve the calendar's layout, buttons, spacing, and re
 
 ### System Diagram
 
-![System Diagram Sprint 2](system_diagram_sprint2.jpeg)
 ![System Diagram Sprint 3](sys_diagram_sprint3.jpg)
