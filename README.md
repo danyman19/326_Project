@@ -19,7 +19,7 @@ Syllabus-to-Calendar Parser is a tool that allows users to copy and paste text f
 
 #### Decision: Service-layer validation
 
-I decided to place the event validation in the service layer rather than the controller or repository. I contemplated keeping the validation in the controller layer as well as it could validate incoming requests but I felt like it would mix business rules with HTTP request handling and make it more complicated to reuse those rules. Even if I had enforced the validation in the repository, it would also mix the validation logic with file storage responsibilites. By keeping the validation in the service layer, we can enforce consistent rules before events are saved regardless of how the service is called. This way it is also easier to test and maintain the code for the future if we ever decide to change how events are stored or add ways to create events. In the end, we decided to keep the validation checks in the services layer because it helps format everything for the repository and the services layer will check formatting and own the rules. The repository layer is kept just for receiving informaition, not checking for formatting. Now the files are all organized separately where the controller will handle requests and responses, the service validates event rules and the repository will read and write events.json.
+I decided to place the event validation in the service layer rather than the controller or repository. I contemplated keeping the validation in the controller layer as well as it could validate incoming requests but I felt like it would mix business rules with HTTP request handling and make it more complicated to reuse those rules. Even if I had enforced the validation in the repository, it would also mix the validation logic with file storage responsibilites. By keeping the validation in the service layer, we can enforce consistent rules before events are saved regardless of how the service is called. This way it is also easier to test and maintain the code for the future if we ever decide to change how events are stored or add ways to create events. In the end, we decided to keep the validation checks in the services layer because it helps format everything for the repository and the services layer will check formatting and own the rules. The repository layer is kept just for receiving information, not checking for formatting. Now the files are all organized separately where the controller will handle requests and responses, the service validates event rules and the repository will read and write events.json.
 
 #### Design Decision Sprint 3:
 
@@ -33,17 +33,13 @@ We chose to store calendar events in events.json instead of MongoDB for now as i
 
 #### Design Decision Sprint 3: Using MongoDB
 
-For Sprint 3, I decided to switch from JSON file storage to MongoDB using Mongoose as we can store and manage events individually, and the data stays saved even after restarting the server. I kept the database operations in the repository layer so the service layer can focus on validation. I also added a DTO to convert MongoDB ObjectIds into string IDs for the frontend. The tradeoff is that MongoDB requires more setup, but it makes the application easier to manage and improve in the future.
+For Sprint 3, I decided to store day and month as separate fields in our MongoDB schema instead of using a single Date field. This works better for our calendar as we already use separate day and month values when creating, validating, and displaying events. Another option was to use a Date field, which would make it easier to manage events across different years. However, this would require extra changes to our service layer, validation, and calendar display. I chose separate fields because they fit our current calendar structure and require fewer changes.
 
 ### Daniel Qi
 
 #### Decision: Click a date to create an event
 
 I decided to, UI wise, have a user create an event by clicking on the date they want the event to be at. The alternative would be for the user instead to fill out a form where they have to manually enter the month and the date along with the title and description. I felt like it would be easier for the user to just click on they day they wanted which would also prevent user related errors when entering the date. Another reason this system works is because right now the calendar only shows the current month. If we were to add the ability to move between months it could be useful for the user to so be able to create an event without having to cycle to that month in the calendar.
-
-### Design Decision Sprint 3: Where the remove button was and how it affected the HTMX
-
-When building the UI I decided to have the remove button within the popup instead of on the event object itself. The alternative would be for the remove button to be directly on the event. One upside to this method is that when setting up the HTMX, you can easily have the hx-target be itself, meaning when an empty send is sent it can easily be destroyed. One reason I chose not to do this method is that when the UI was shrunk to be the width of a phone (375 px), the size of the event was tiny and a remove button would completely block out the clickability of the event. To circumvent the above problem I had to dynamically set the hx-target based on what event was clicked.
 
 ## Setup
 
@@ -209,14 +205,7 @@ We added Tailwind CSS to improve the calendar's layout, buttons, spacing, and re
 
 - Resize the browser or use Chrome Developer Tools to see how the calendar adapts to smaller screens.
 
-### Jest Service-Layer Tests
-
-We added Jest tests for the event service layer in **tests**/eventsService.test.js. The tests make sure that the service correctly handles event creation, input validation and deletion including cases such as invalid dates, missing or empty titles, invalid descriptions, and also attempts to delete events that do not exist. The repository functions are mocked using jest.unstable_mockModule(), so the tests focus on service-layer business logic without requiring a running MongoDB database.
-
-#### Test file to run:
-
-Run 'npm test' from project root. Tests located in **tests**/eventsService.test.js.
-
 ### System Diagram
 
+![System Diagram Sprint 2](system_diagram_sprint2.jpeg)
 ![System Diagram Sprint 3](sys_diagram_sprint3.jpg)
