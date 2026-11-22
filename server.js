@@ -51,7 +51,7 @@ app.use(morgan("dev"));
 
 // home page route
 app.get("/", (req, res) => {
-  res.send("Home page for syllabus!");
+  res.redirect(req.user ? "/events" : "/login");
 });
 
 // events route
