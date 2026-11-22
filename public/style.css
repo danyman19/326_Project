@@ -295,6 +295,9 @@
   .pb-2 {
     padding-bottom: calc(var(--spacing) * 2);
   }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
   .text-\[9px\] {
     font-size: 9px;
   }
@@ -369,6 +372,37 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
+}
+auth-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+.auth-nav h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.auth-links a {
+  color: #0b6e99;
+  text-decoration: none;
+}
+.auth-links a:hover {
+  text-decoration: underline;
+}
+.auth-links form {
+  margin: 0;
+}
+.auth-links span {
+  font-size: 14px;
+  color: #555;
 }
 @property --tw-translate-x {
   syntax: "*";

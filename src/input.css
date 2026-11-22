@@ -20,3 +20,41 @@
     border-radius: 4px;
   }
 }
+/*authentication navigation*/
+auth-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd
+}
+
+.auth-nav h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.auth-links a {
+  color: #0b6e99;
+  text-decoration: none;
+}
+
+.auth-links a:hover {
+  text-decoration: underline;
+}
+
+.auth-links form {
+  margin: 0;
+}
+
+.auth-links span {
+  font-size: 14px;
+  color: #555;
+}

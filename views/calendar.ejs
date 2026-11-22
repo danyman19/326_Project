@@ -8,8 +8,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body class="mx-auto max-w-[1000px] p-4 font-sans">
-    <%- include("partials/calendar-container") %> <%-
-    include("partials/popups.ejs") %>
+
+    <!--authentication navigation-->
+    <header class="auth-nav">
+      <h2>Calendar</h2>
+
+      <div class="auth-links">
+      <% if (locals.user) { %>
+        <span>Logged in as <%= user.email %></span>
+
+        <form action="/logout" method="POST">
+          <button type="submit">Log out</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Log in</a>
+      <% } %>
+    </div>
+      </header>
+
+      <%- include("partials/calendar-container") %>
+      <%- include("partials/popups.ejs") %>
 
     <script src="/app.js" defer></script>
   </body>

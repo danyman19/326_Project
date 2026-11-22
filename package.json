@@ -1,4 +1,3 @@
-
 {
   "name": "326_project",
   "version": "1.0.0",
@@ -22,8 +21,12 @@
   },
   "homepage": "https://github.com/danyman19/326_Project#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-mongo": "^6.0.0",
+    "dotenv": "^18.0.10",
     "ejs": "^7.0.2",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "mongoose": "^9.12.0",
     "morgan": "^1.12.1"
   },
@@ -32,4 +35,4 @@
     "jest": "^30.5.2",
     "tailwindcss": "^4.3.4"
   }
-} 
+}
