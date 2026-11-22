@@ -1,8 +1,10 @@
 import { jest } from '@jest/globals';
+import { findById } from '../repositories/eventsRepository.js';
 
 //mock events repository
 jest.unstable_mockModule('../repositories/eventsRepository.js', () => ({
   getAll: jest.fn(),
+  findById: jest.fn(),
   create: jest.fn(),
   removeById: jest.fn(),
 }));
@@ -11,7 +13,7 @@ jest.unstable_mockModule('../repositories/eventsRepository.js', () => ({
 const { createEvent, deleteEvent, listEvents } =
   await import('../services/eventsService.js');
 
-const { getAll, create, removeById } =
+const { getAll, findById, create, removeById } =
   await import('../repositories/eventsRepository.js');
 
 //reset mocks before each test
@@ -19,6 +21,7 @@ beforeEach(() => {
   jest.clearAllMocks();
 
   getAll.mockResolvedValue([]);
+  findById.mockResolvedValue(null);
 
   create.mockImplementation(async (data) => ({
     _id: 'mongo-event-id',
@@ -210,40 +213,99 @@ test('createEvent rejects a title containing only whitespace', async () => {
 });
 
 //delete tests
+// test that an event that does not exist returns a 404 error
 test('deleteEvent returns an error when the event does not exist', async () => {
-  removeById.mockResolvedValue(null);
+  findById.mockResolvedValue(null);
 
-  const result = await deleteEvent('missing-id');
+  const user = {
+    id: 'user-123',
+    role: 'member',
+  };
+
+  const result = await deleteEvent('missing-id', user);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(404);
   expect(result.error.message).toBe('Event not found');
-  expect(removeById).toHaveBeenCalledWith('missing-id');
+  expect(findById).toHaveBeenCalledWith('missing-id');
+  expect(removeById).not.toHaveBeenCalled();
 });
 
-test('deleteEvent calls removeById once when the event does not exist', async () => {
-  removeById.mockResolvedValue(null);
-
-  const result = await deleteEvent('missing-id');
-
-  expect(result.ok).toBe(false);
-  expect(removeById).toHaveBeenCalledTimes(1);
-});
-
-test('deleteEvent removes an existing event', async () => {
-  removeById.mockResolvedValue({
+// test that an event owner can delete their own event
+test('deleteEvent allows an owner to delete their own event', async () => {
+  findById.mockResolvedValue({
     _id: 'existing-event-id',
+    owner: 'user-123',
     day: 5,
     month: 11,
     title: 'Team Meeting',
-    description: 'Discuss Sprint 3',
+    description: 'Discuss Sprint 4',
   });
 
-  const result = await deleteEvent('existing-event-id');
+  removeById.mockResolvedValue({
+    _id: 'existing-event-id',
+  });
+
+  const user = {
+    id: 'user-123',
+    role: 'member',
+  };
+
+  const result = await deleteEvent('existing-event-id', user);
 
   expect(result.ok).toBe(true);
   expect(result.value).toBe(null);
+  expect(findById).toHaveBeenCalledWith('existing-event-id');
   expect(removeById).toHaveBeenCalledWith('existing-event-id');
+});
+
+// test that an admin can delete another user's event
+test('deleteEvent allows an admin to delete another users event', async () => {
+  findById.mockResolvedValue({
+    _id: 'existing-event-id',
+    owner: 'user-123',
+    day: 5,
+    month: 11,
+    title: 'Team Meeting',
+    description: 'Discuss Sprint 4',
+  });
+
+  removeById.mockResolvedValue({
+    _id: 'existing-event-id',
+  });
+
+  const admin = {
+    id: 'admin-456',
+    role: 'admin',
+  };
+
+  const result = await deleteEvent('existing-event-id', admin);
+
+  expect(result.ok).toBe(true);
+  expect(removeById).toHaveBeenCalledWith('existing-event-id');
+});
+
+// test that a non-owner cannot delete another user's event
+test('deleteEvent returns a 403 error when a non-owner tries to delete an event', async () => {
+  findById.mockResolvedValue({
+    _id: 'existing-event-id',
+    owner: 'user-123',
+    day: 5,
+    month: 11,
+    title: 'Team Meeting',
+    description: 'Discuss Sprint 4',
+  });
+
+  const user = {
+    id: 'user-456',
+    role: 'member',
+  };
+
+  const result = await deleteEvent('existing-event-id', user);
+
+  expect(result.ok).toBe(false);
+  expect(result.error.status).toBe(403);
+  expect(removeById).not.toHaveBeenCalled();
 });
 
 //list tests
