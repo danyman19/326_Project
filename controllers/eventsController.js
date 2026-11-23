@@ -27,7 +27,7 @@ export const list = async (req, res) => {
 
 // POST- creates an event
 export const create = async (req, res) => {
-  const result = await eventsService.createEvent(req.body);
+  const result = await eventsService.createEvent(req.body, req.user);
 
   if (!result.ok) {
     res.status(result.error.status).json({
@@ -48,7 +48,7 @@ export const create = async (req, res) => {
 // DELETE- removes an event by MongoDB ID
 export const destroy = async (req, res) => {
   const id = req.params.id;
-  const result = await eventsService.deleteEvent(id);
+  const result = await eventsService.deleteEvent(id, req.user);
 
   if (!result.ok) {
     res.status(result.error.status).json({

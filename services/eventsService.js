@@ -1,6 +1,7 @@
 import { Ok, Err } from "../result.js";
 import {
   getAll,
+  findById,
   create,
   removeById,
 } from "../repositories/eventsRepository.js";
@@ -77,7 +78,7 @@ export const listEvents = async (month, year) => {
 };
 
 // POST request saves the event
-export const createEvent = async (data) => {
+export const createEvent = async (data, user) => {
   data.day = Number(data.day);
   data.month = Number(data.month);
   const result = validateEvent(data);
@@ -86,19 +87,34 @@ export const createEvent = async (data) => {
     return result;
   }
 
-  return Ok(toEventDto(await create(result.value)));
+  const eventData = {
+    ...result.value,
+    owner: user.id,
+  };
+
+  return Ok(toEventDto(await create(eventData)));
 };
 
 // DELETE- removes first event matching all four field
-export const deleteEvent = async (id) => {
-  const event = await removeById(id);
+export const deleteEvent = async (id, user) => {
+  //find event
+  const event = await findById(id);
 
+  //check if event exists
   if (!event) {
-    return Err({
-      status: 404,
-      message: "Event not found",
-    });
+    return Err({ status: 404, message: "Event not found" });
   }
+
+  //check if user owns the event or is an admin
+  const isOwner = event.owner?.toString() === user.id;
+  const isAdmin = user.role === "admin";
+
+  if (!isOwner && !isAdmin) {
+    return Err({ status: 403, message: "Forbidden" });
+  }
+
+  //delete event if the user is allowed
+  await removeById(id);
 
   return Ok(null);
 };
