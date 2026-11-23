@@ -31,6 +31,7 @@ function eventClick() {
   // eventPopup.style.left = pos.left + "px";
 
   eventPopup.hidden = false;
+  submitPopup.hidden = true;
   eventPopup.setAttribute("tabindex", "-1");
   eventPopup.focus();
 
@@ -49,6 +50,7 @@ function dayClick() {
   form.setAttribute("hx-target", `#${targetId}`);
 
   submitPopup.hidden = false;
+  eventPopup.hidden = true;
   submitPopup.querySelector("#event-title").focus();
 }
 
