@@ -2,12 +2,12 @@ import express from "express";
 import eventsRouter from "./routes/events.js";
 import morgan from "morgan";
 import mongoose from "mongoose";
-import 'dotenv/config';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
+import "dotenv/config";
+import session from "express-session";
+import MongoStore from "connect-mongo";
 
-import authRouter from './routes/auth.js';
-import { attachUser } from './middleware/attachUser.js';
+import authRouter from "./routes/auth.js";
+import { attachUser } from "./middleware/attachUser.js";
 
 const app = express();
 const PORT = 3000;
@@ -37,11 +37,11 @@ app.use(
     store: MongoStore.create({ mongoUrl }),
     cookie: {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 24 * 60 * 60 * 1000,
     },
-  })
+  }),
 );
 
 app.use(attachUser);
@@ -52,6 +52,11 @@ app.use(morgan("dev"));
 // home page route
 app.get("/", (req, res) => {
   res.redirect(req.user ? "/events" : "/login");
+});
+
+//health route
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", uptime: process.uptime() });
 });
 
 // events route
