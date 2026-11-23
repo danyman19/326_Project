@@ -13,3 +13,7 @@ No AI for sprint2
 ## Sprint 3
 
 Use AI understand how MongoDB ObjectIds work and why a DTO is needed to convert them into string IDs for the frontend
+
+## Sprint 4
+
+Used AI to understand bcrypt, authentication, and troubleshoot signup, login, and logout issues.
