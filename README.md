@@ -50,6 +50,10 @@ I decided to, UI wise, have a user create an event by clicking on the date they 
 
 When building the UI I decided to have the remove button within the popup instead of on the event object itself. The alternative would be for the remove button to be directly on the event. One upside to this method is that when setting up the HTMX, you can easily have the hx-target be itself, meaning when an empty send is sent it can easily be destroyed. One reason I chose not to do this method is that when the UI was shrunk to be the width of a phone (375 px), the size of the event was tiny and a remove button would completely block out the clickability of the event. To circumvent the above problem I had to dynamically set the hx-target based on what event was clicked.
 
+### Design Decision Sprint 4:
+
+When working on the focus functionality so the website was navigatable through keyboard only, I decided to implement a Alt-Shift-N keybind to recenter the focus back, specifically the top of the page or inside the popup if one was open. The alternative would be for there to be no keybind and just require the user to tab back manually. The problem with this is it took many tabs to recenter the focus, especially because with the popup open the user would really only want to select the elements inside the popup. My change helped the user's quality of life while still allowing full control of their focus.
+
 ## Setup
 
 ### 1. Clone the repository
@@ -116,6 +120,11 @@ For Sprint 2, our team implemented a calendar that allows users to add, view, an
 5. Click "Add event" to save the event. The new event event will be on the selected date. lick "Cancel" if you don't want to add the event
 6. Click on an existing event to view its title, date, and description
 7. Click Delete to remove the event, or Close to return to the calendar without making changes
+
+### How to do Health Check
+
+Open http://localhost:3000/health
+The expected json is the status of "ok" and a uptime in seconds.
 
 ### Validation and Error Handling
 
@@ -213,6 +222,20 @@ We added Tailwind CSS to improve the calendar's layout, buttons, spacing, and re
 - Open http://localhost:3000/events.
 
 - Resize the browser or use Chrome Developer Tools to see how the calendar adapts to smaller screens.
+
+#### 5. Accessibility audit / Changes
+
+Initial Audit:
+Currently the calendar has no keyboard control, as the events and days cannot be selected through tab, and nothing can be clicked without the mouse. There are missing labels within the add event popup form. The color contrast on some of the buttons and hover are not properly contrasted.
+Changes: Added keyboard control, added missing labels, fixed colors.
+
+**How to verify:**
+- Navigate page with tab (all events and days can be selected.)
+- Press space or enter to click on a selected event, day, or button.
+- When popups are closed focus should fall on a relevant item
+- Alt-Shift-N to reset focus to relevant starting point
+- Inspect forms to verify labels exist
+- Color contrast checker to check colors
 
 ### System Diagram
 
