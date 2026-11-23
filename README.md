@@ -25,6 +25,11 @@ I decided to place the event validation in the service layer rather than the con
 
 For my service-layer tests, I followed the Unit 13 approach of mocking the repository with Jest's jest.unstable_mockModule() so the tests would not depend on a running database. An alternative I considered for this was testing the service against a real MongoDB test database. I think mocking the repository is the better approach for this because its purpose is to very the service's business rules like the event validation, ID assignment, deletion, etc. rather than testing the database operations. Using a real database would introduce additional setup and make the tests slower and make it harder to focus on the service logic. The tradeoff is that the mocked tests cannot confirm that hte repository's MongoDB operations work correctly so those need to be verified separately.
 
+#### Design Decision: sprint 4
+For authorization, I decided to handle resource ownership and admin permissions in the service layer instead of putting all the checks in the routes. The requireLogin middleware makes sure the user is logged in before they can access the events routes. Then, when someone tries to delete an event, the events service checks who owns that event and whether the logged-in user is an admin. This way, the permissions are checked based on the actual event instead of just relying on the route.
+
+Another option would have been to handle all of these checks in the routes or controllers, but I felt that keeping them in the service layer made more sense. It also means that if the service gets used somewhere else later, the authorization checks are still there. One downside is that the service now needs the logged-in user passed into it, and the event has to be retrieved before deciding if it can be deleted. I thought this was a good tradeoff because it keeps the authorization logic in one place and makes it easier to test.
+
 ### Mai Le
 
 #### Decision: Using JSON file storage
