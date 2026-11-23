@@ -17,6 +17,57 @@ submitCancel.addEventListener("click", async (event) => {
   submitPopup.hidden = true;
 });
 
+function eventClick() {
+  const data = JSON.parse(selectedEvent.dataset.event);
+  popupHeader.textContent = data.title + " " + data.month + "/" + data.day;
+  popupText.textContent = data.description;
+
+  // const pos = eventClicked.getBoundingClientRect();
+  // eventPopup.style.top = pos.top + "px";
+  // eventPopup.style.left = pos.left + "px";
+
+  eventPopup.hidden = false;
+
+  deleteButton.setAttribute("hx-delete", "/events/" + data.event_id);
+  deleteButton.setAttribute("hx-target", "#" + selectedEvent.id);
+
+  htmx.process(deleteButton);
+}
+
+function dayClick() {
+  eventDay.value = Number.parseInt(selectedDay.dataset.day);
+  eventMonth.value = Number.parseInt(selectedDay.dataset.month) + 1;
+
+  const targetId = `event-list-${eventMonth.value}-${eventDay.value}`;
+
+  form.setAttribute("hx-target", `#${targetId}`);
+
+  // const pos = dayClicked.getBoundingClientRect();
+  // submitPopup.style.top = pos.top + "px";
+  // submitPopup.style.left = pos.left + "px";
+  submitPopup.hidden = false;
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key != "Enter" && event.key != " ") return;
+
+  const target = event.target;
+  const calendarArea = target.closest(".calendar");
+
+  if (!calendarArea) return;
+
+  const eventClicked = event.target.closest(".event");
+  const dayClicked = event.target.closest(".day");
+
+  if (eventClicked) {
+    selectedEvent = eventClicked;
+    eventClick();
+  } else if (dayClicked) {
+    selectedDay = dayClicked;
+    dayClick();
+  }
+});
+
 document.addEventListener("click", async (event) => {
   const target = event.target;
   const calendarArea = target.closest(".calendar");
@@ -28,35 +79,10 @@ document.addEventListener("click", async (event) => {
 
   if (eventClicked) {
     selectedEvent = eventClicked;
-
-    const data = JSON.parse(selectedEvent.dataset.event);
-    popupHeader.textContent = data.title + " " + data.month + "/" + data.day;
-    popupText.textContent = data.description;
-
-    // const pos = eventClicked.getBoundingClientRect();
-    // eventPopup.style.top = pos.top + "px";
-    // eventPopup.style.left = pos.left + "px";
-
-    eventPopup.hidden = false;
-
-    deleteButton.setAttribute("hx-delete", "/events/" + data.event_id);
-    deleteButton.setAttribute("hx-target", "#" + selectedEvent.id);
-
-    htmx.process(deleteButton);
+    eventClick();
   } else if (dayClicked) {
     selectedDay = dayClicked;
-
-    eventDay.value = Number.parseInt(selectedDay.dataset.day);
-    eventMonth.value = Number.parseInt(selectedDay.dataset.month) + 1;
-
-    const targetId = `event-list-${eventMonth.value}-${eventDay.value}`;
-
-    form.setAttribute("hx-target", `#${targetId}`);
-
-    // const pos = dayClicked.getBoundingClientRect();
-    // submitPopup.style.top = pos.top + "px";
-    // submitPopup.style.left = pos.left + "px";
-    submitPopup.hidden = false;
+    dayClick();
   }
 });
 
