@@ -1,5 +1,9 @@
 import { jest } from '@jest/globals';
-import { findById } from '../repositories/eventsRepository.js';
+
+const testUser = {
+  id: "user-123",
+  role: "member",
+};
 
 //mock events repository
 jest.unstable_mockModule('../repositories/eventsRepository.js', () => ({
@@ -37,7 +41,7 @@ test('createEvent rejects a missing title', async () => {
     day: 5,
     month: 11,
     title: '',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -49,7 +53,7 @@ test('createEvent rejects an invalid day or month', async () => {
     day: 1.5,
     month: 11,
     title: 'Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -61,7 +65,7 @@ test('createEvent rejects a month outside the valid range', async () => {
     day: 5,
     month: 13,
     title: 'Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -72,7 +76,7 @@ test('createEvent rejects a month below 1', async () => {
     day: 5,
     month: 0,
     title: 'Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -84,7 +88,7 @@ test('createEvent rejects a day that does not exist in the month', async () => {
     day: 31,
     month: 4,
     title: 'Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -98,7 +102,7 @@ test('createEvent rejects a day below 1', async () => {
     day: 0,
     month: 5,
     title: 'Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -110,7 +114,7 @@ test('createEvent rejects a non-string description', async () => {
     month: 11,
     title: 'Meeting',
     description: 123,
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -123,7 +127,7 @@ test('createEvent does not create an event with invalid information', async () =
     day: 5,
     month: 11,
     title: '',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(create).not.toHaveBeenCalled();
@@ -136,7 +140,7 @@ test('createEvent creates an event with valid information', async () => {
     month: 11,
     title: 'Team Meeting',
     description: 'Discuss Sprint 3',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(true);
   expect(result.value).toEqual({
@@ -153,6 +157,7 @@ test('createEvent creates an event with valid information', async () => {
     month: 11,
     title: 'Team Meeting',
     description: 'Discuss Sprint 3',
+    owner: testUser.id,
   });
 });
 
@@ -161,7 +166,7 @@ test('createEvent allows an optional description', async () => {
     day: 5,
     month: 11,
     title: 'Team Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(true);
   expect(result.value.description).toBe('');
@@ -173,7 +178,7 @@ test('createEvent trims whitespace from title and description', async () => {
     month: 11,
     title: '  Team Meeting  ',
     description: '  Discuss Sprint 3  ',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(true);
   expect(result.value.title).toBe('Team Meeting');
@@ -184,7 +189,7 @@ test('createEvent rejects a missing day', async () => {
   const result = await createEvent({
     month: 11,
     title: 'Team Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -194,7 +199,7 @@ test('createEvent rejects a missing month', async () => {
   const result = await createEvent({
     day: 5,
     title: 'Team Meeting',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);
@@ -205,7 +210,7 @@ test('createEvent rejects a title containing only whitespace', async () => {
     day: 5,
     month: 11,
     title: '    ',
-  });
+  }, testUser);
 
   expect(result.ok).toBe(false);
   expect(result.error.status).toBe(400);

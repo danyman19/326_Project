@@ -5,8 +5,12 @@ const eventSchema = new mongoose.Schema(
     day: { type: Number, required: true },
     month: { type: Number, required: true },
     title: { type: String, required: true },
-    description: { type: String, default: ""}
-
+    description: { type: String, default: "" },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );
