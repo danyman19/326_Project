@@ -26,6 +26,7 @@ I decided to place the event validation in the service layer rather than the con
 For my service-layer tests, I followed the Unit 13 approach of mocking the repository with Jest's jest.unstable_mockModule() so the tests would not depend on a running database. An alternative I considered for this was testing the service against a real MongoDB test database. I think mocking the repository is the better approach for this because its purpose is to very the service's business rules like the event validation, ID assignment, deletion, etc. rather than testing the database operations. Using a real database would introduce additional setup and make the tests slower and make it harder to focus on the service logic. The tradeoff is that the mocked tests cannot confirm that hte repository's MongoDB operations work correctly so those need to be verified separately.
 
 #### Design Decision: sprint 4
+
 For authorization, I decided to handle resource ownership and admin permissions in the service layer instead of putting all the checks in the routes. The requireLogin middleware makes sure the user is logged in before they can access the events routes. Then, when someone tries to delete an event, the events service checks who owns that event and whether the logged-in user is an admin. This way, the permissions are checked based on the actual event instead of just relying on the route.
 
 Another option would have been to handle all of these checks in the routes or controllers, but I felt that keeping them in the service layer made more sense. It also means that if the service gets used somewhere else later, the authorization checks are still there. One downside is that the service now needs the logged-in user passed into it, and the event has to be retrieved before deciding if it can be deleted. I thought this was a good tradeoff because it keeps the authorization logic in one place and makes it easier to test.
@@ -39,6 +40,10 @@ We chose to store calendar events in events.json instead of MongoDB for now as i
 #### Design Decision Sprint 3: Using MongoDB
 
 For Sprint 3, I decided to store day and month as separate fields in our MongoDB schema instead of using a single Date field. This works better for our calendar as we already use separate day and month values when creating, validating, and displaying events. Another option was to use a Date field, which would make it easier to manage events across different years. However, this would require extra changes to our service layer, validation, and calendar display. I chose separate fields because they fit our current calendar structure and require fewer changes.
+
+#### Design Decision Sprint 4: session-based authentication
+
+For Sprint 4, I chose session-based authentication with MongoDB instead of JWTs because sessions are easier to manage and invalidate when users log out. The tradeoff is that sessions require server-side storage, but I think it's worth it for better control and security. I also used bcrypt to hash passwords and assigned roles on the server to prevent users from giving themselves admin access.
 
 ### Daniel Qi
 
@@ -69,7 +74,25 @@ cd 326_Project
 npm install
 ```
 
-### 3. Start MongoDB
+### 3. Authentication Setup
+
+Copy `.env.example` to `.env` and set `MONGODB_URI` and `SESSION_SECRET`. Do not commit `.env`.
+
+We use bcrypt to hash passwords and mongoDB sessions to manage logins.
+
+How to use:
+
+1. Sign up at `/signup` (default role: member).
+2. Log in at `/login` to access calendar.
+3. Click Log out to end the session.
+
+To create an admin:
+
+1. Sign up for an account.
+2. Add its email to `ADMIN_EMAILS` in `.env`.
+3. Run `node scripts/makeAdmin.js`.
+
+### 4. Start MongoDB
 
 Start MongoDB with:
 
@@ -79,19 +102,19 @@ dc-up mongo
 
 The app uses mongodb://dev:devpassword@mongo:27017/devdb?authSource=admin by default. Use MONGODB_URI to set a different connection
 
-### 4. Build Tailwind CSS
+### 5. Build Tailwind CSS
 
 ```bash
 npm run build:css
 ```
 
-### 5. Start the server
+### 6. Start the server
 
 ```bash
 npm start
 ```
 
-### 6. Open app
+### 7. Open app
 
 Go to
 
@@ -230,6 +253,7 @@ Currently the calendar has no keyboard control, as the events and days cannot be
 Changes: Added keyboard control, added missing labels, fixed colors.
 
 **How to verify:**
+
 - Navigate page with tab (all events and days can be selected.)
 - Press space or enter to click on a selected event, day, or button.
 - When popups are closed focus should fall on a relevant item
@@ -237,6 +261,16 @@ Changes: Added keyboard control, added missing labels, fixed colors.
 - Inspect forms to verify labels exist
 - Color contrast checker to check colors
 
+#### 6. Authentication
+
+Added signup, login, logout, bcrypt password hashing, MongoDB sessions, and member/admin roles.
+
+**How to verify:**
+
+- Sign up, log in, and log out through the browser.
+- Confirm incorrect passwords return 401 and duplicate signups return 409.
+- Verify signup always assigns the member role, even if admin is requested.
+
 ### System Diagram
 
-![System Diagram Sprint 3](sys_diagram_sprint3.jpg)
+![System Diagram Sprint 4](sys_des_sprint_4.jpeg)
